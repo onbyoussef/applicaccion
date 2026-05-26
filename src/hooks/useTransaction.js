@@ -55,6 +55,7 @@ export const useTransaction = () => {
       filtered = filtered.filter(tx => tx.date >= startDate && tx.date <= endDate);
     }
     return getTotalByType(filtered, 'expense');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactions]);
 
   const getTotalIncome = useCallback((startDate = null, endDate = null) => {
@@ -63,6 +64,7 @@ export const useTransaction = () => {
       filtered = filtered.filter(tx => tx.date >= startDate && tx.date <= endDate);
     }
     return getTotalByType(filtered, 'income');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactions]);
 
   return {

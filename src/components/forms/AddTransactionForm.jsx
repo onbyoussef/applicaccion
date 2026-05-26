@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBudget } from '../../hooks/useBudget.js';
-import { CATEGORIES, STATUS_CONFIG } from '../../constants/categories.js';
-import { formatCurrency, getTodayISO } from '../../utils/formatters.js';
+import { CATEGORIES } from '../../constants/categories.js';
+import { getTodayISO } from '../../utils/formatters.js';
 import { isValidAmount, isValidDescription, generateId } from '../../utils/validators.js';
 import Button from '../common/Button.jsx';
 import Input from '../common/Input.jsx';

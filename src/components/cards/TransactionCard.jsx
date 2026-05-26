@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { itemVariants } from '../../utils/animations.js';
-import { formatCurrency, formatDate, formatTimeAgo } from '../../utils/formatters.js';
+import { formatCurrency, formatDate } from '../../utils/formatters.js';
 import { CATEGORIES } from '../../constants/categories.js';
 import Badge from '../common/Badge.jsx';
 

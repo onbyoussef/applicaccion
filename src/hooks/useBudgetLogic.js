@@ -9,13 +9,11 @@ import {
   getStatus,
   getRemainingDaysInMonth,
   getElapsedDaysInMonth,
-  getCurrentMonthBounds,
   getTotalByCategory,
   getDailyAverage,
   calculateHealthScore,
   getSpendingPersonality,
 } from '../utils/calculations.js';
-import { filterByDateRange } from '../utils/filters.js';
 
 export const useBudgetLogic = () => {
   const { getMonthTotals } = useTransaction();

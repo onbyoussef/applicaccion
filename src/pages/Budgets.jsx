@@ -8,7 +8,6 @@ import { containerVariants, itemVariants } from '../utils/animations.js';
 import Header from '../components/layout/Header.jsx';
 import Input from '../components/common/Input.jsx';
 import Button from '../components/common/Button.jsx';
-import EmptyState from '../components/common/EmptyState.jsx';
 
 const BudgetPage = () => {
   const { budget, setBudget } = useBudget();
@@ -16,9 +15,7 @@ const BudgetPage = () => {
   const [totalBudget, setTotalBudget] = useState(budget.total.toString());
   const [categoryBudgets, setCategoryBudgets] = useState(budget.byCategory || {});
   const [isEditing, setIsEditing] = useState(false);
-  const [showAlert, setShowAlert] = useState(budgetUsagePercent > 100);
-
-  const expenseCategories = useMemo(() => {
+  const [showConfirmClear, setShowConfirmClear] = useState(false);
     return Object.entries(CATEGORIES)
       .filter(([_, cat]) => cat.type !== 'income')
       .map(([key, cat]) => ({

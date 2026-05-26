@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useBudget } from '../hooks/useBudget.js';
-import { formatCurrency, formatDate } from '../utils/formatters.js';
+import { formatCurrency } from '../utils/formatters.js';
 import { filterByType, filterBySearch, sortByDate } from '../utils/filters.js';
-import { CATEGORIES } from '../constants/categories.js';
 import { containerVariants, itemVariants } from '../utils/animations.js';
 import Header from '../components/layout/Header.jsx';
 import TransactionCard from '../components/cards/TransactionCard.jsx';

@@ -6,7 +6,6 @@ import { storageService } from '../services/storageService.js';
 import { containerVariants, itemVariants } from '../utils/animations.js';
 import Header from '../components/layout/Header.jsx';
 import Button from '../components/common/Button.jsx';
-import { CURRENCIES } from '../constants/categories.js';
 
 const Settings = () => {
   const { settings, setCurrency, clearAllData, hasDemoData } = useBudget();

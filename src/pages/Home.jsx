@@ -17,8 +17,6 @@ import {
 } from '../utils/formatters.js';
 import { STATUS_CONFIG, MOTIVATIONAL_TIPS } from '../constants/categories.js';
 import { 
-  filterByDateRange, 
-  getLastNTransactions,
   getTransactionsForLastNDays 
 } from '../utils/filters.js';
 import { getDateFromDaysAgo } from '../utils/calculations.js';
@@ -29,14 +27,12 @@ const Home = ({ onAddTransaction }) => {
   const {
     currentMonthExpenses,
     currentMonthIncome,
-    remainingBudget,
     safeSpendToday,
     burnRate,
     forecast,
     budgetUsagePercent,
     status,
     healthScore,
-    spendingPersonality,
   } = useBudgetLogic();
 
   const currency = settings?.currency || 'EUR';
@@ -174,7 +170,7 @@ const Home = ({ onAddTransaction }) => {
         <motion.div variants={itemVariants}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white">Recent Transactions</h3>
-            <a href="#" className="text-primary-400 text-sm hover:text-primary-300 transition">View All</a>
+            <button onClick={onAddTransaction} className="text-primary-400 text-sm hover:text-primary-300 transition font-semibold">View All →</button>
           </div>
 
           {recentTransactions.length > 0 ? (
