@@ -22,7 +22,7 @@ export const generateDemoTransactions = () => {
     description: 'Monthly Salary',
     date: new Date(currentYear, currentMonth, 1).toISOString().split('T')[0],
     type: 'income',
-    needLevel: 'fixed',
+    needLevel: 'essential',
     cycle: 'fixed',
   });
 
