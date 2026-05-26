@@ -170,11 +170,11 @@ export const storageService = {
   exportData: () => {
     try {
       const data = {
-        transactions: this.getTransactions(),
-        budget: this.getBudget(),
-        settings: this.getSettings(),
-        theme: this.getTheme(),
-        currency: this.getCurrency(),
+        transactions: storageService.getTransactions(),
+        budget: storageService.getBudget(),
+        settings: storageService.getSettings(),
+        theme: storageService.getTheme(),
+        currency: storageService.getCurrency(),
         exportDate: new Date().toISOString(),
       };
       return data;
@@ -187,11 +187,11 @@ export const storageService = {
   // Import data
   importData: (data) => {
     try {
-      if (data.transactions) this.setTransactions(data.transactions);
-      if (data.budget) this.setBudget(data.budget);
-      if (data.settings) this.setSettings(data.settings);
-      if (data.theme) this.setTheme(data.theme);
-      if (data.currency) this.setCurrency(data.currency);
+      if (data.transactions) storageService.setTransactions(data.transactions);
+      if (data.budget) storageService.setBudget(data.budget);
+      if (data.settings) storageService.setSettings(data.settings);
+      if (data.theme) storageService.setTheme(data.theme);
+      if (data.currency) storageService.setCurrency(data.currency);
       return true;
     } catch (error) {
       console.error('Error importing data:', error);

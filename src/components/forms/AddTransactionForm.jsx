@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useBudget } from '../../hooks/useBudget.js';
 import { CATEGORIES } from '../../constants/categories.js';
 import { getTodayISO } from '../../utils/formatters.js';
-import { isValidAmount, isValidDescription, generateId } from '../../utils/validators.js';
+import { isValidAmount, isValidDescription } from '../../utils/validators.js';
 import Button from '../common/Button.jsx';
 import Input from '../common/Input.jsx';
 
@@ -57,7 +57,6 @@ const AddTransactionForm = ({ isOpen, onClose }) => {
     if (!validateForm()) return;
 
     const newTransaction = {
-      id: generateId(),
       type: formData.type,
       amount: parseFloat(formData.amount),
       category: formData.category,

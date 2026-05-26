@@ -172,8 +172,8 @@ export const BudgetProvider = ({ children }) => {
   // Action creators
   const addTransaction = useCallback((transaction) => {
     const newTransaction = {
-      id: generateId(),
       ...transaction,
+      id: transaction?.id || generateId(),
     };
     dispatch({ type: 'ADD_TRANSACTION', payload: newTransaction });
     return newTransaction;
