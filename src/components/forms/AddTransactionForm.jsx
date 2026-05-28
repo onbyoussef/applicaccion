@@ -8,7 +8,7 @@ import Button from '../common/Button.jsx';
 import Input from '../common/Input.jsx';
 
 const AddTransactionForm = ({ isOpen, onClose }) => {
-  const { addTransaction, budget } = useBudget();
+  const { addTransaction } = useBudget();
   const [formData, setFormData] = useState({
     type: 'expense',
     amount: '',

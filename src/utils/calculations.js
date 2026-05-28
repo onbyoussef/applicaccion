@@ -1,4 +1,4 @@
-import { STATUS, DAYS_IN_MONTH } from '../constants/categories.js';
+import { STATUS } from '../constants/categories.js';
 
 // Calculate safe spend today
 export const calculateSafeSpendToday = (remainingBudget, remainingDays) => {

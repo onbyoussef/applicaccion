@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '../utils/animations.js';
 import { useBudget } from '../hooks/useBudget.js';
-import { useBudgetLogic } from '../hooks/useBudgetLogic.js';
-import { useTransaction } from '../hooks/useTransaction.js';
+import { useDashboardLogic } from '../hooks/useDashboardLogic.js';
 import Header from '../components/layout/Header.jsx';
 import MetricCard from '../components/cards/MetricCard.jsx';
 import HealthScoreCard from '../components/cards/HealthScoreCard.jsx';
@@ -15,16 +14,12 @@ import {
   formatCurrency, 
   getGreeting 
 } from '../utils/formatters.js';
-import { STATUS_CONFIG, MOTIVATIONAL_TIPS } from '../constants/categories.js';
-import { 
-  getTransactionsForLastNDays 
-} from '../utils/filters.js';
-import { getDateFromDaysAgo } from '../utils/calculations.js';
+import { STATUS_CONFIG } from '../constants/categories.js';
 
 const Home = ({ onAddTransaction }) => {
-  const { settings, deleteTransaction } = useBudget();
-  const { getRecentTransactions, getCurrentMonthTransactions } = useTransaction();
+  const { deleteTransaction } = useBudget();
   const {
+    currencySymbol,
     currentMonthExpenses,
     currentMonthIncome,
     safeSpendToday,
@@ -33,36 +28,10 @@ const Home = ({ onAddTransaction }) => {
     budgetUsagePercent,
     status,
     healthScore,
-  } = useBudgetLogic();
-
-  const currency = settings?.currency || 'EUR';
-  const currencySymbol = { EUR: '€', USD: '$', GBP: '£', MAD: 'د.م.' }[currency] || '€';
-
-  // Get spending data for last 7 days
-  const last7DaysTransactions = useMemo(() => {
-    const transactions = getTransactionsForLastNDays(getCurrentMonthTransactions(), 7);
-    const dailyData = {};
-
-    for (let i = 6; i >= 0; i--) {
-      const date = getDateFromDaysAgo(i);
-      dailyData[date] = 0;
-    }
-
-    transactions.forEach(tx => {
-      if (tx.type === 'expense' && dailyData.hasOwnProperty(tx.date)) {
-        dailyData[tx.date] += tx.amount;
-      }
-    });
-
-    return Object.entries(dailyData).map(([date, amount]) => ({
-      day: new Date(date).toLocaleDateString('en-US', { weekday: 'short' }),
-      amount: Math.round(amount * 100) / 100,
-      date,
-    }));
-  }, [getCurrentMonthTransactions]);
-
-  const recentTransactions = getRecentTransactions(5);
-  const randomTip = MOTIVATIONAL_TIPS[Math.floor(Math.random() * MOTIVATIONAL_TIPS.length)];
+    last7DaysData,
+    recentTransactions,
+    tip,
+  } = useDashboardLogic();
   const statusConfig = STATUS_CONFIG[status];
 
   return (
@@ -151,7 +120,7 @@ const Home = ({ onAddTransaction }) => {
           className="bg-slate-800 rounded-lg p-4"
         >
           <h3 className="text-lg font-semibold text-white mb-4">Last 7 Days</h3>
-          <DailyAreaChart data={last7DaysTransactions} />
+          <DailyAreaChart data={last7DaysData} />
         </motion.div>
 
         {/* Health Score */}
@@ -163,7 +132,7 @@ const Home = ({ onAddTransaction }) => {
           className="bg-slate-800 rounded-lg p-4 border-l-4 border-primary-500"
         >
           <p className="text-sm text-slate-400 mb-1">💡 Today's Insight</p>
-          <p className="text-white font-medium">{randomTip}</p>
+          <p className="text-white font-medium">{tip}</p>
         </motion.div>
 
         {/* Recent Transactions */}

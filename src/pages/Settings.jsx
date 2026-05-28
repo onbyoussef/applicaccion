@@ -8,7 +8,7 @@ import Header from '../components/layout/Header.jsx';
 import Button from '../components/common/Button.jsx';
 
 const Settings = () => {
-  const { settings, setCurrency, clearAllData, hasDemoData } = useBudget();
+  const { settings, setCurrency, clearAllData, hasDemoData, clearDemoData } = useBudget();
   const { theme, setTheme } = useTheme();
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [showConfirmDeleteDemo, setShowConfirmDeleteDemo] = useState(false);
@@ -39,7 +39,7 @@ const Settings = () => {
   };
 
   const handleDeleteDemoData = () => {
-    storageService.setHasDemoData(false);
+    clearDemoData();
     setShowConfirmDeleteDemo(false);
   };
 

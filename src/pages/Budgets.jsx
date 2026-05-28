@@ -15,19 +15,20 @@ const BudgetPage = () => {
   const [totalBudget, setTotalBudget] = useState(budget.total.toString());
   const [categoryBudgets, setCategoryBudgets] = useState(budget.byCategory || {});
   const [isEditing, setIsEditing] = useState(false);
-  const [showConfirmClear, setShowConfirmClear] = useState(false);
+
+  const expenseCategories = useMemo(() => {
     return Object.entries(CATEGORIES)
-      .filter(([_, cat]) => cat.type !== 'income')
+      .filter(([key]) => key !== 'income')
       .map(([key, cat]) => ({
         key,
         ...cat,
         spent: categoryTotals[key] || 0,
         budgeted: categoryBudgets[key] || (budget.total * 0.1), // Default 10% per category
       }))
-      .map(cat => ({
+      .map((cat) => ({
         ...cat,
         remaining: cat.budgeted - cat.spent,
-        usagePercent: (cat.spent / cat.budgeted * 100).toFixed(1),
+        usagePercent: (cat.budgeted > 0 ? (cat.spent / cat.budgeted) * 100 : 0).toFixed(1),
         status: cat.spent > cat.budgeted ? 'over' : cat.spent >= cat.budgeted * 0.9 ? 'warning' : 'ok',
       }));
   }, [categoryTotals, categoryBudgets, budget.total]);

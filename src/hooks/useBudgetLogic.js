@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTransaction } from './useTransaction.js';
 import { useBudget } from './useBudget.js';
+import { useMidnightTicker } from './useMidnightTicker.js';
 import {
   calculateSafeSpendToday,
   calculateBurnRate,
@@ -16,6 +17,7 @@ import {
 } from '../utils/calculations.js';
 
 export const useBudgetLogic = () => {
+  const todayKey = useMidnightTicker();
   const { getMonthTotals } = useTransaction();
   const { transactions, budget } = useBudget();
 
@@ -23,18 +25,20 @@ export const useBudgetLogic = () => {
   const currentMonthExpenses = monthTotals.expenses;
   const currentMonthIncome = monthTotals.income;
 
+  const now = useMemo(() => new Date(`${todayKey}T12:00:00`), [todayKey]);
+
   // Current month calculations
   const remainingBudget = useMemo(() => {
     return budget.total - currentMonthExpenses;
   }, [budget.total, currentMonthExpenses]);
 
   const remainingDays = useMemo(() => {
-    return getRemainingDaysInMonth();
-  }, []);
+    return getRemainingDaysInMonth(now);
+  }, [now]);
 
   const elapsedDays = useMemo(() => {
-    return getElapsedDaysInMonth();
-  }, []);
+    return getElapsedDaysInMonth(now);
+  }, [now]);
 
   const safeSpendToday = useMemo(() => {
     return calculateSafeSpendToday(remainingBudget, remainingDays);
@@ -45,9 +49,9 @@ export const useBudgetLogic = () => {
   }, [currentMonthExpenses, elapsedDays]);
 
   const forecast = useMemo(() => {
-    const totalDays = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    const totalDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     return calculateForecast(burnRate, totalDays);
-  }, [burnRate]);
+  }, [burnRate, now]);
 
   const budgetUsagePercent = useMemo(() => {
     return calculateBudgetUsage(currentMonthExpenses, budget.total);
