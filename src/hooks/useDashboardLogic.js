@@ -112,11 +112,11 @@ export const useDashboardLogic = () => {
 
   const suggestions = useMemo(() => {
     return calculateSavingsSuggestions(transactions, budget, currentMonthStart, currentMonthEnd);
-  }, [transactions, budget]);
+  }, [transactions, budget, currentMonthStart, currentMonthEnd]);
 
   const reportCard = useMemo(() => {
     return calculateReportCard(transactions, budget, currentMonthStart, currentMonthEnd);
-  }, [transactions, budget]);
+  }, [transactions, budget, currentMonthStart, currentMonthEnd]);
 
   const budgetRecommendation = useMemo(() => {
     return calculateSmartBudgetRecommendation(transactions, budget);
