@@ -1,13 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { LayoutDashboard, ArrowLeftRight, BarChart3, Target, Settings } from 'lucide-react';
 
 const BottomNav = ({ activePage, onNavigate }) => {
   const navItems = [
-    { id: 'home', label: 'Home', emoji: '🏠' },
-    { id: 'transactions', label: 'Transactions', emoji: '💸' },
-    { id: 'analytics', label: 'Analytics', emoji: '📊' },
-    { id: 'budgets', label: 'Budgets', emoji: '🎯' },
-    { id: 'settings', label: 'Settings', emoji: '⚙️' },
+    { id: 'home', label: 'Home', icon: LayoutDashboard },
+    { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'budgets', label: 'Budgets', icon: Target },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -31,9 +32,9 @@ const BottomNav = ({ activePage, onNavigate }) => {
               <motion.div
                 initial={false}
                 animate={isActive ? { scale: 1.2 } : { scale: 1 }}
-                className="text-2xl mb-1"
+                className="mb-1"
               >
-                {item.emoji}
+                <item.icon size={22} className="stroke-2" />
               </motion.div>
               <span className={`text-xs font-medium ${
                 isActive ? 'text-primary-500' : 'text-slate-400'

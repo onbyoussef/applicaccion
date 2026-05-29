@@ -3,6 +3,10 @@ import storageService from '../services/storageService.js';
 import { generateDemoTransactions, generateDemoBudget, generateDemoSettings } from '../data/demoData.js';
 import { DEFAULT_SETTINGS, DEFAULT_BUDGET } from '../constants/categories.js';
 import { generateId } from '../utils/validators.js';
+import { 
+  detectUserCurrency, 
+  markCurrencyAsAutoDetected
+} from '../utils/currencyDetection.js';
 
 export const BudgetContext = createContext();
 
@@ -119,41 +123,52 @@ export const BudgetProvider = ({ children }) => {
 
   // Initialize from localStorage on mount
   useEffect(() => {
-    try {
-      const savedTransactions = storageService.getTransactions();
-      const savedBudget = storageService.getBudget();
-      const savedSettings = storageService.getSettings();
-      const isFirstRun = storageService.isFirstRun();
-      const hasDemoData = storageService.hasDemoData();
+    const initializeApp = async () => {
+      try {
+        const savedTransactions = storageService.getTransactions();
+        const savedBudget = storageService.getBudget();
+        const savedSettings = storageService.getSettings();
+        const isFirstRun = storageService.isFirstRun();
+        const hasDemoData = storageService.hasDemoData();
 
-      let transactions = savedTransactions || [];
-      let budget = savedBudget || DEFAULT_BUDGET;
-      let settings = savedSettings || DEFAULT_SETTINGS;
+        let transactions = savedTransactions || [];
+        let budget = savedBudget || DEFAULT_BUDGET;
+        let settings = savedSettings || DEFAULT_SETTINGS;
 
-      // If first run, add demo data
-      if (isFirstRun && transactions.length === 0) {
-        transactions = generateDemoTransactions();
-        budget = generateDemoBudget();
-        settings = generateDemoSettings();
-        dispatch({ type: 'ADD_DEMO_DATA' });
-        storageService.setHasDemoData(true);
+        // If first run, add demo data and detect currency
+        if (isFirstRun && transactions.length === 0) {
+          transactions = generateDemoTransactions();
+          budget = generateDemoBudget();
+          settings = generateDemoSettings();
+          
+          // Auto-detect currency on first run
+          const detectedCurrency = await detectUserCurrency();
+          settings.currency = detectedCurrency;
+          markCurrencyAsAutoDetected();
+          
+          dispatch({ type: 'ADD_DEMO_DATA' });
+          storageService.setHasDemoData(true);
+          storageService.setSettings(settings);
+        }
+
+        dispatch({
+          type: 'INIT_STATE',
+          payload: {
+            transactions,
+            budget,
+            settings,
+            isFirstRun,
+            hasDemoData: hasDemoData || isFirstRun,
+            isLoading: false,
+          },
+        });
+      } catch (error) {
+        console.error('Error initializing from storage:', error);
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
+    };
 
-      dispatch({
-        type: 'INIT_STATE',
-        payload: {
-          transactions,
-          budget,
-          settings,
-          isFirstRun,
-          hasDemoData: hasDemoData || isFirstRun,
-          isLoading: false,
-        },
-      });
-    } catch (error) {
-      console.error('Error initializing from storage:', error);
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }
+    initializeApp();
   }, []);
 
   // Persist state changes to localStorage

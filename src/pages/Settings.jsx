@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useBudget } from '../hooks/useBudget.js';
 import { useTheme } from '../hooks/useTheme.js';
 import { storageService } from '../services/storageService.js';
+import { isAutoDetectedCurrency, clearAutoDetectedFlag } from '../utils/currencyDetection.js';
 import { containerVariants, itemVariants } from '../utils/animations.js';
 import Header from '../components/layout/Header.jsx';
 import Button from '../components/common/Button.jsx';
@@ -13,6 +14,7 @@ const Settings = () => {
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [showConfirmDeleteDemo, setShowConfirmDeleteDemo] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
+  const [isAutoDetected, setIsAutoDetected] = useState(isAutoDetectedCurrency());
 
   const handleExportData = () => {
     try {
@@ -84,12 +86,25 @@ const Settings = () => {
 
         {/* Currency Selection */}
         <motion.div variants={itemVariants} className="bg-white dark:bg-slate-800 rounded-lg p-4">
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Currency</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Currency</p>
+            {isAutoDetected && (
+              <span className="text-xs bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full font-medium">
+                Auto-detected
+              </span>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-2">
             {currencyOptions.map((curr) => (
               <button
                 key={curr.code}
-                onClick={() => setCurrency(curr.code)}
+                onClick={() => {
+                  setCurrency(curr.code);
+                  if (isAutoDetected) {
+                    clearAutoDetectedFlag();
+                    setIsAutoDetected(false);
+                  }
+                }}
                 className={`py-3 px-3 rounded-lg font-medium text-sm transition-all text-center ${
                   settings.currency === curr.code
                     ? 'bg-primary-500 text-white ring-2 ring-primary-300'

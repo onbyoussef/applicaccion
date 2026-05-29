@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import { itemVariants } from '../../utils/animations.js';
 import { formatCurrency, formatDate } from '../../utils/formatters.js';
 import { CATEGORIES } from '../../constants/categories.js';
+import { getIconComponent } from '../../utils/iconMapper.js';
 import Badge from '../common/Badge.jsx';
 
 const TransactionCard = ({ transaction, onDelete, currency = '€' }) => {
   const category = CATEGORIES[transaction.category];
   const isIncome = transaction.type === 'income';
+  const IconComponent = getIconComponent(category?.icon || 'Gift');
 
   return (
     <motion.div
@@ -15,7 +17,9 @@ const TransactionCard = ({ transaction, onDelete, currency = '€' }) => {
       className="bg-slate-700 dark:bg-slate-700 rounded-lg p-4 flex items-center justify-between hover:bg-slate-600 dark:hover:bg-slate-600 transition-colors"
     >
       <div className="flex items-center gap-3 flex-1">
-        <div className="text-2xl">{category?.emoji || '💰'}</div>
+        <div className="text-primary-400">
+          <IconComponent size={24} className="stroke-2" />
+        </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-white truncate">{transaction.description}</p>
           <p className="text-xs text-slate-400">{formatDate(transaction.date)}</p>

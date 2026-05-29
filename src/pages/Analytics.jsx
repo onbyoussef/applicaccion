@@ -6,6 +6,7 @@ import { useBudgetLogic } from '../hooks/useBudgetLogic.js';
 import { formatCurrency, formatPercentage } from '../utils/formatters.js';
 import { getCategoryDistribution, getNeedLevelDistribution, getCycleDistribution } from '../utils/calculations.js';
 import { CATEGORIES } from '../constants/categories.js';
+import { getIconComponent } from '../utils/iconMapper.js';
 import { containerVariants, itemVariants } from '../utils/animations.js';
 import Header from '../components/layout/Header.jsx';
 import EmptyState from '../components/common/EmptyState.jsx';
@@ -46,7 +47,7 @@ const Analytics = () => {
     return Object.entries(categoryTotals)
       .map(([category, amount]) => ({
         category: CATEGORIES[category]?.label || category,
-        emoji: CATEGORIES[category]?.emoji || '📦',
+        icon: CATEGORIES[category]?.icon || 'Gift',
         amount,
         percentage: (amount / currentMonthExpenses * 100).toFixed(1),
       }))
@@ -90,18 +91,23 @@ const Analytics = () => {
         <motion.div variants={itemVariants} className="bg-white dark:bg-slate-800 rounded-lg p-4">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🏆 Top Spending Categories</h3>
           <div className="space-y-3">
-            {topCategories.map((cat, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{cat.emoji}</span>
-                  <div>
-                    <p className="font-semibold text-slate-900 dark:text-white">{cat.category}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{cat.percentage}% of budget</p>
+            {topCategories.map((cat, idx) => {
+              const IconComponent = getIconComponent(cat.icon);
+              return (
+                <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="text-primary-400">
+                      <IconComponent size={24} className="stroke-2" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white">{cat.category}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{cat.percentage}% of budget</p>
+                    </div>
                   </div>
+                  <p className="font-bold text-slate-900 dark:text-white">{formatCurrency(cat.amount)}</p>
                 </div>
-                <p className="font-bold text-slate-900 dark:text-white">{formatCurrency(cat.amount)}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
 

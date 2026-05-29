@@ -1,16 +1,16 @@
-// Category definitions with emojis
+// Category definitions with Lucide React icons
 export const CATEGORIES = {
-  food: { emoji: '🍕', label: 'Food & Dining' },
-  transport: { emoji: '🚗', label: 'Transport' },
-  shopping: { emoji: '🛍️', label: 'Shopping' },
-  housing: { emoji: '🏠', label: 'Housing' },
-  health: { emoji: '💊', label: 'Health' },
-  entertainment: { emoji: '🎬', label: 'Entertainment' },
-  travel: { emoji: '✈️', label: 'Travel' },
-  education: { emoji: '📚', label: 'Education' },
-  business: { emoji: '💼', label: 'Business' },
-  income: { emoji: '💰', label: 'Income' },
-  other: { emoji: '🎁', label: 'Other' },
+  food: { icon: 'UtensilsCrossed', label: 'Food & Dining' },
+  transport: { icon: 'Car', label: 'Transport' },
+  shopping: { icon: 'ShoppingBag', label: 'Shopping' },
+  housing: { icon: 'Home', label: 'Housing' },
+  health: { icon: 'Heart', label: 'Health' },
+  entertainment: { icon: 'Tv', label: 'Entertainment' },
+  travel: { icon: 'Plane', label: 'Travel' },
+  education: { icon: 'BookOpen', label: 'Education' },
+  business: { icon: 'Briefcase', label: 'Business' },
+  income: { icon: 'TrendingUp', label: 'Income' },
+  other: { icon: 'Gift', label: 'Other' },
 };
 
 export const CATEGORY_KEYS = Object.keys(CATEGORIES);

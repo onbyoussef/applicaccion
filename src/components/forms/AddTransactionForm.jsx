@@ -4,6 +4,7 @@ import { useBudget } from '../../hooks/useBudget.js';
 import { CATEGORIES } from '../../constants/categories.js';
 import { getTodayISO } from '../../utils/formatters.js';
 import { isValidAmount, isValidDescription } from '../../utils/validators.js';
+import { getIconComponent } from '../../utils/iconMapper.js';
 import Button from '../common/Button.jsx';
 import Input from '../common/Input.jsx';
 
@@ -182,21 +183,26 @@ const AddTransactionForm = ({ isOpen, onClose }) => {
                     Category
                   </label>
                   <div className="grid grid-cols-4 gap-2">
-                    {Object.entries(CATEGORIES).map(([key, cat]) => (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, category: key })}
-                        className={`py-3 px-2 rounded-lg font-medium text-xs transition-all text-center ${
-                          formData.category === key
-                            ? 'bg-primary-500 text-white ring-2 ring-primary-300'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                        }`}
-                      >
-                        <div className="text-xl">{cat.emoji}</div>
-                        <div className="text-xs mt-1">{cat.label}</div>
-                      </button>
-                    ))}
+                    {Object.entries(CATEGORIES).map(([key, cat]) => {
+                      const IconComponent = getIconComponent(cat.icon);
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, category: key })}
+                          className={`py-3 px-2 rounded-lg font-medium text-xs transition-all text-center ${
+                            formData.category === key
+                              ? 'bg-primary-500 text-white ring-2 ring-primary-300'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <div className="flex justify-center mb-1">
+                            <IconComponent size={20} className="stroke-2" />
+                          </div>
+                          <div className="text-xs">{cat.label}</div>
+                        </button>
+                      );
+                    })}
                   </div>
                   {errors.category && (
                     <p className="text-sm text-rose-600 dark:text-rose-400 mt-2">{errors.category}</p>

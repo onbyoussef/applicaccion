@@ -4,6 +4,7 @@ import { useBudget } from '../hooks/useBudget.js';
 import { useBudgetLogic } from '../hooks/useBudgetLogic.js';
 import { formatCurrency } from '../utils/formatters.js';
 import { CATEGORIES } from '../constants/categories.js';
+import { getIconComponent } from '../utils/iconMapper.js';
 import { containerVariants, itemVariants } from '../utils/animations.js';
 import Header from '../components/layout/Header.jsx';
 import Input from '../components/common/Input.jsx';
@@ -177,27 +178,31 @@ const BudgetPage = () => {
         <motion.div variants={containerVariants} className="space-y-3">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Budget by Category</h3>
           
-          {expenseCategories.map((cat) => (
-            <motion.div
-              key={cat.key}
-              variants={itemVariants}
-              className="bg-white dark:bg-slate-800 rounded-lg p-4"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{cat.emoji}</span>
-                  <div>
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm">{cat.label}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {getStatusEmoji(cat.status)} {cat.usagePercent}% used
-                    </p>
+          {expenseCategories.map((cat) => {
+            const IconComponent = getIconComponent(cat.icon);
+            return (
+              <motion.div
+                key={cat.key}
+                variants={itemVariants}
+                className="bg-white dark:bg-slate-800 rounded-lg p-4"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="text-primary-400">
+                      <IconComponent size={24} className="stroke-2" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm">{cat.label}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {getStatusEmoji(cat.status)} {cat.usagePercent}% used
+                      </p>
+                    </div>
+                  </div>
+                  <div className="font-bold text-slate-900 dark:text-white text-right">
+                    <div className="text-xs text-slate-500 dark:text-slate-400">{formatCurrency(cat.spent)}</div>
+                    <div className="text-sm text-slate-700 dark:text-slate-300">of {formatCurrency(cat.budgeted)}</div>
                   </div>
                 </div>
-                <div className="font-bold text-slate-900 dark:text-white text-right">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{formatCurrency(cat.spent)}</div>
-                  <div className="text-sm text-slate-700 dark:text-slate-300">of {formatCurrency(cat.budgeted)}</div>
-                </div>
-              </div>
 
               {/* Progress Bar */}
               <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-2">
@@ -229,7 +234,8 @@ const BudgetPage = () => {
                 </p>
               )}
             </motion.div>
-          ))}
+            );
+          })}
         </motion.div>
 
         {/* Save Button */}
