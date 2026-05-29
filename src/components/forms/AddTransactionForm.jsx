@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBudget } from '../../hooks/useBudget.js';
 import { CATEGORIES } from '../../constants/categories.js';
@@ -20,6 +20,22 @@ const AddTransactionForm = ({ isOpen, onClose }) => {
     cycle: 'oneoff',
   });
   const [errors, setErrors] = useState({});
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        type: 'expense',
+        amount: '',
+        category: 'food',
+        description: '',
+        date: getTodayISO(),
+        needLevel: 'essential',
+        cycle: 'oneoff',
+      });
+      setErrors({});
+    }
+  }, [isOpen]);
 
   const needLevels = [
     { value: 'essential', emoji: '🟢', label: 'Essential' },
