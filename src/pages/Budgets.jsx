@@ -1,10 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useBudget } from '../hooks/useBudget.js';
 import { useBudgetLogic } from '../hooks/useBudgetLogic.js';
 import { formatCurrency } from '../utils/formatters.js';
-import { CATEGORIES } from '../constants/categories.js';
-import { getIconComponent } from '../utils/iconMapper.js';
 import { containerVariants, itemVariants } from '../utils/animations.js';
 import Header from '../components/layout/Header.jsx';
 import Input from '../components/common/Input.jsx';
@@ -12,68 +10,16 @@ import Button from '../components/common/Button.jsx';
 
 const BudgetPage = () => {
   const { budget, setBudget } = useBudget();
-  const { currentMonthExpenses, categoryTotals, remainingBudget, remainingDays, budgetUsagePercent, safeSpendToday } = useBudgetLogic();
+  const { currentMonthExpenses, remainingBudget, remainingDays, budgetUsagePercent, safeSpendToday } = useBudgetLogic();
   const [totalBudget, setTotalBudget] = useState(budget.total.toString());
-  const [categoryBudgets, setCategoryBudgets] = useState(budget.byCategory || {});
   const [isEditing, setIsEditing] = useState(false);
-
-  const expenseCategories = useMemo(() => {
-    return Object.entries(CATEGORIES)
-      .filter(([key]) => key !== 'income')
-      .map(([key, cat]) => ({
-        key,
-        ...cat,
-        spent: categoryTotals[key] || 0,
-        budgeted: categoryBudgets[key] || (budget.total * 0.1), // Default 10% per category
-      }))
-      .map((cat) => ({
-        ...cat,
-        remaining: cat.budgeted - cat.spent,
-        usagePercent: (cat.budgeted > 0 ? (cat.spent / cat.budgeted) * 100 : 0).toFixed(1),
-        status: cat.spent > cat.budgeted ? 'over' : cat.spent >= cat.budgeted * 0.9 ? 'warning' : 'ok',
-      }));
-  }, [categoryTotals, categoryBudgets, budget.total]);
 
   const handleSaveBudget = () => {
     const newBudget = {
       total: parseFloat(totalBudget) || 0,
-      byCategory: categoryBudgets,
     };
     setBudget(newBudget);
     setIsEditing(false);
-  };
-
-  const updateCategoryBudget = (category, amount) => {
-    setCategoryBudgets(prev => ({
-      ...prev,
-      [category]: parseFloat(amount) || 0,
-    }));
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'ok':
-        return 'bg-emerald-500';
-      case 'warning':
-        return 'bg-amber-500';
-      case 'over':
-        return 'bg-rose-500';
-      default:
-        return 'bg-slate-300';
-    }
-  };
-
-  const getStatusEmoji = (status) => {
-    switch (status) {
-      case 'ok':
-        return '🟢';
-      case 'warning':
-        return '🟡';
-      case 'over':
-        return '🔴';
-      default:
-        return '⚪';
-    }
   };
 
   return (
@@ -141,10 +87,10 @@ const BudgetPage = () => {
 
         {/* Safe Spend Today */}
         <motion.div variants={itemVariants} className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4">
-          <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Safe Spend Today</p>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{formatCurrency(Math.max(safeSpendToday, 0))}</p>
+          <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">💰 Safe Spend Today</p>
+          <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{formatCurrency(Math.max(safeSpendToday, 0))}</p>
           <p className="text-xs text-emerald-600 dark:text-emerald-300 mt-2">
-            You can spend {formatCurrency(Math.max(safeSpendToday, 0))} today and stay on track
+            ✓ You can safely spend this amount today to stay within your monthly budget
           </p>
         </motion.div>
 
@@ -155,101 +101,47 @@ const BudgetPage = () => {
             onClick={() => isEditing ? setIsEditing(false) : setIsEditing(true)}
             className="w-full"
           >
-            {isEditing ? '✕ Cancel Editing' : '✎ Edit Budget'}
+            {isEditing ? '✕ Cancel' : '✎ Edit Budget'}
           </Button>
         </motion.div>
 
-        {/* Edit Total Budget */}
+        {/* Edit Total Budget Section */}
         {isEditing && (
-          <motion.div variants={itemVariants}>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Monthly Budget Total
+          <motion.div variants={itemVariants} className="bg-slate-800 rounded-lg p-4">
+            <label className="block text-sm font-semibold text-slate-300 mb-3">
+              Monthly Budget Total ({formatCurrency(budget.total)})
             </label>
-            <Input 
-              type="number"
-              value={totalBudget}
-              onChange={(e) => setTotalBudget(e.target.value)}
-              placeholder="0.00"
-            />
-          </motion.div>
-        )}
-
-        {/* Category Budgets */}
-        <motion.div variants={containerVariants} className="space-y-3">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Budget by Category</h3>
-          
-          {expenseCategories.map((cat) => {
-            const IconComponent = getIconComponent(cat.icon);
-            return (
-              <motion.div
-                key={cat.key}
-                variants={itemVariants}
-                className="bg-white dark:bg-slate-800 rounded-lg p-4"
+            <div className="flex gap-2">
+              <Input 
+                type="number"
+                value={totalBudget}
+                onChange={(e) => setTotalBudget(e.target.value)}
+                placeholder="Enter budget amount"
+                className="flex-1"
+              />
+              <Button 
+                variant="success"
+                onClick={handleSaveBudget}
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="text-primary-400">
-                      <IconComponent size={24} className="stroke-2" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-900 dark:text-white text-sm">{cat.label}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {getStatusEmoji(cat.status)} {cat.usagePercent}% used
-                      </p>
-                    </div>
-                  </div>
-                  <div className="font-bold text-slate-900 dark:text-white text-right">
-                    <div className="text-xs text-slate-500 dark:text-slate-400">{formatCurrency(cat.spent)}</div>
-                    <div className="text-sm text-slate-700 dark:text-slate-300">of {formatCurrency(cat.budgeted)}</div>
-                  </div>
-                </div>
-
-              {/* Progress Bar */}
-              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-2">
-                <div 
-                  className={`h-full transition-all ${getStatusColor(cat.status)}`}
-                  style={{ width: `${Math.min(parseFloat(cat.usagePercent), 100)}%` }}
-                />
-              </div>
-
-              {/* Edit Mode */}
-              {isEditing && (
-                <Input 
-                  type="number"
-                  value={categoryBudgets[cat.key]?.toString() || cat.budgeted.toString()}
-                  onChange={(e) => updateCategoryBudget(cat.key, e.target.value)}
-                  placeholder="0.00"
-                  className="mt-2"
-                />
-              )}
-
-              {/* Remaining/Over indicator */}
-              {!isEditing && (
-                <p className={`text-xs font-semibold mt-2 ${
-                  cat.remaining >= 0 
-                    ? 'text-emerald-600 dark:text-emerald-400' 
-                    : 'text-rose-600 dark:text-rose-400'
-                }`}>
-                  {cat.remaining >= 0 ? '✓ ' : '✗ '}{formatCurrency(Math.abs(cat.remaining))} {cat.remaining >= 0 ? 'remaining' : 'over'}
-                </p>
-              )}
-            </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Save Button */}
-        {isEditing && (
-          <motion.div variants={itemVariants}>
-            <Button 
-              variant="success"
-              onClick={handleSaveBudget}
-              className="w-full"
-            >
-              ✓ Save Budget
-            </Button>
+                Save
+              </Button>
+            </div>
+            <p className="text-xs text-slate-400 mt-2">
+              💡 This is your total monthly budget. Track transactions by category to see spending breakdown.
+            </p>
           </motion.div>
         )}
+
+        {/* Budget Info */}
+        <motion.div variants={itemVariants} className="bg-slate-800 rounded-lg p-4 border-l-4 border-primary-500">
+          <p className="text-sm text-slate-300 font-medium mb-2">📊 How it works:</p>
+          <ul className="text-xs text-slate-400 space-y-1">
+            <li>✓ Set your total monthly budget above</li>
+            <li>✓ Add transactions to track spending by category</li>
+            <li>✓ Safe Spend Today updates automatically</li>
+            <li>✓ Visual progress bar shows your budget usage</li>
+          </ul>
+        </motion.div>
       </div>
     </motion.div>
   );

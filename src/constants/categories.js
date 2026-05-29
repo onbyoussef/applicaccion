@@ -69,21 +69,9 @@ export const DEFAULT_SETTINGS = {
   isFirstRun: true,
 };
 
-// Default budget
+// Default budget - simplified to total only
 export const DEFAULT_BUDGET = {
   total: 2000,
-  byCategory: {
-    food: 300,
-    transport: 150,
-    shopping: 200,
-    housing: 1000,
-    health: 100,
-    entertainment: 150,
-    travel: 100,
-    education: 50,
-    business: 0,
-    other: 0,
-  },
 };
 
 // Toast messages

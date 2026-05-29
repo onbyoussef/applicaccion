@@ -335,18 +335,6 @@ export const generateDemoTransactions = () => {
 export const generateDemoBudget = () => {
   return {
     total: 2000,
-    byCategory: {
-      food: 350,
-      transport: 200,
-      shopping: 150,
-      housing: 1000,
-      health: 150,
-      entertainment: 100,
-      travel: 50,
-      education: 50,
-      business: 0,
-      other: 0,
-    },
   };
 };
 

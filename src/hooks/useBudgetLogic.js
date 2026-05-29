@@ -71,7 +71,8 @@ export const useBudgetLogic = () => {
 
   const categoryUsagePercent = useMemo(() => {
     const usage = {};
-    Object.entries(budget.byCategory).forEach(([category, amount]) => {
+    const byCategory = budget.byCategory || {};
+    Object.entries(byCategory).forEach(([category, amount]) => {
       usage[category] = amount > 0 ? (categoryTotals[category] / amount) * 100 : 0;
     });
     return usage;
