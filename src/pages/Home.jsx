@@ -10,28 +10,54 @@ import TransactionCard from '../components/cards/TransactionCard.jsx';
 import DailyAreaChart from '../components/charts/DailyAreaChart.jsx';
 import Button from '../components/common/Button.jsx';
 import EmptyState from '../components/common/EmptyState.jsx';
-import { 
-  formatCurrency, 
-  getGreeting 
-} from '../utils/formatters.js';
+import { getGreeting } from '../utils/formatters.js';
 import { STATUS_CONFIG } from '../constants/categories.js';
+
+// Phase 2 Analytics Components
+import DailyBudgetPulse from '../components/analytics/DailyBudgetPulse.jsx';
+import SpendingDNA from '../components/analytics/SpendingDNA.jsx';
+import NeedLevelSummary from '../components/analytics/NeedLevelSummary.jsx';
+import CycleSummary from '../components/analytics/CycleSummary.jsx';
+import ItemSummary from '../components/analytics/ItemSummary.jsx';
+import DangerDayDetector from '../components/analytics/DangerDayDetector.jsx';
+import SubscriptionRadar from '../components/analytics/SubscriptionRadar.jsx';
+import UnexpectedExpenseShield from '../components/analytics/UnexpectedExpenseShield.jsx';
+import OneOffExpenseTracker from '../components/analytics/OneOffExpenseTracker.jsx';
+import ItemIntelligence from '../components/analytics/ItemIntelligence.jsx';
+import EndOfMonthReportCard from '../components/analytics/EndOfMonthReportCard.jsx';
+import SmartBudgetRecommender from '../components/analytics/SmartBudgetRecommender.jsx';
+import SavingsSuggester from '../components/analytics/SavingsSuggester.jsx';
+import DailyLogStreak from '../components/analytics/DailyLogStreak.jsx';
 
 const Home = ({ onAddTransaction }) => {
   const { deleteTransaction } = useBudget();
   const {
     currencySymbol,
+    remainingDays,
     currentMonthExpenses,
     currentMonthIncome,
     safeSpendToday,
     burnRate,
-    forecast,
     budgetUsagePercent,
     status,
     healthScore,
     last7DaysData,
     recentTransactions,
     tip,
+    // Phase 2 metrics
+    spendingDNA,
+    needLevels,
+    cycleSummary,
+    itemSummary,
+    dangerDay,
+    subscriptions,
+    unexpectedExpenses,
+    suggestions,
+    reportCard,
+    budgetRecommendation,
+    logStreak,
   } = useDashboardLogic();
+
   const statusConfig = STATUS_CONFIG[status];
 
   return (
@@ -48,85 +74,103 @@ const Home = ({ onAddTransaction }) => {
         animate="visible"
         className="container mx-auto px-4 py-6 space-y-6 pb-32"
       >
-        {/* Total Balance Card */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-gradient-to-br from-primary-600 to-primary-400 rounded-lg p-6 text-white relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
-          <div className="relative z-10">
-            <p className="text-white/80 text-sm font-medium mb-2">Total Balance</p>
-            <h2 className="text-4xl font-bold mb-2">{formatCurrency(currentMonthIncome - currentMonthExpenses, currencySymbol)}</h2>
-            <p className="text-sm text-white/70">Income: {formatCurrency(currentMonthIncome, currencySymbol)}</p>
+        {/* ===== TIER 1: Daily Budget Pulse ===== */}
+        <DailyBudgetPulse 
+          safeSpendToday={safeSpendToday} 
+          currencySymbol={currencySymbol}
+          remainingDays={remainingDays}
+        />
+
+        {/* ===== TIER 2: Key Metrics ===== */}
+        <motion.div variants={itemVariants} className="space-y-3">
+          <h3 className="text-sm font-semibold text-slate-300">📊 Key Metrics</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <MetricCard
+              icon="📥"
+              label="Income"
+              value={currentMonthIncome}
+              subtitle={currencySymbol}
+              gradient="from-success-600 to-success-400"
+            />
+            <MetricCard
+              icon="📤"
+              label="Expenses"
+              value={currentMonthExpenses}
+              subtitle={currencySymbol}
+              gradient="from-danger-600 to-danger-400"
+            />
+            <MetricCard
+              icon="📉"
+              label="Burn Rate"
+              value={`${currencySymbol}${Math.round(burnRate * 100) / 100}/day`}
+              subtitle="Avg Spending"
+              gradient="from-warning-600 to-warning-400"
+            />
+            <motion.div
+              variants={itemVariants}
+              className={`${statusConfig.color} rounded-lg p-4 text-white flex flex-col items-center justify-center`}
+            >
+              <span className="text-2xl mb-1">{statusConfig.emoji}</span>
+              <p className="text-xs font-medium">{statusConfig.label}</p>
+              <p className="text-lg font-bold mt-1">{Math.round(budgetUsagePercent)}%</p>
+            </motion.div>
           </div>
         </motion.div>
 
-        {/* Key Metrics Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <MetricCard
-            icon="💰"
-            label="Safe Spend Today"
-            value={Math.round(safeSpendToday * 100) / 100}
-            subtitle={currencySymbol}
-            gradient="from-success-600 to-success-400"
-          />
-          <MetricCard
-            icon="📉"
-            label="Burn Rate"
-            value={`${currencySymbol}${Math.round(burnRate * 100) / 100}/day`}
-            subtitle="Avg Spending"
-            gradient="from-warning-600 to-warning-400"
-          />
-          <MetricCard
-            icon="📈"
-            label="Forecast"
-            value={formatCurrency(forecast, currencySymbol)}
-            subtitle="End of month"
-            gradient="from-slate-600 to-slate-500"
-          />
-          <motion.div
-            variants={itemVariants}
-            className={`${statusConfig.color} rounded-lg p-4 text-white flex flex-col items-center justify-center`}
-          >
-            <span className="text-3xl mb-2">{statusConfig.emoji}</span>
-            <p className="text-xs font-medium">{statusConfig.label}</p>
-            <p className="text-lg font-bold mt-1">{Math.round(budgetUsagePercent)}%</p>
-          </motion.div>
-        </div>
+        {/* ===== TIER 3: Daily Log Streak ===== */}
+        <DailyLogStreak streak={logStreak} />
 
-        {/* Income vs Expenses */}
-        <div className="grid grid-cols-2 gap-4">
-          <motion.div
-            variants={itemVariants}
-            className="bg-slate-800 rounded-lg p-4"
-          >
-            <div className="text-2xl mb-2">📥</div>
-            <p className="text-sm text-slate-400">Income</p>
-            <p className="text-xl font-bold text-success-400 mt-1">{formatCurrency(currentMonthIncome, currencySymbol)}</p>
-          </motion.div>
-          <motion.div
-            variants={itemVariants}
-            className="bg-slate-800 rounded-lg p-4"
-          >
-            <div className="text-2xl mb-2">📤</div>
-            <p className="text-sm text-slate-400">Expenses</p>
-            <p className="text-xl font-bold text-danger-400 mt-1">{formatCurrency(currentMonthExpenses, currencySymbol)}</p>
-          </motion.div>
-        </div>
-
-        {/* Spending Trend Chart */}
+        {/* ===== TIER 4: Spending Trends ===== */}
         <motion.div
           variants={itemVariants}
           className="bg-slate-800 rounded-lg p-4"
         >
-          <h3 className="text-lg font-semibold text-white mb-4">Last 7 Days</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Last 7 Days Trend</h3>
           <DailyAreaChart data={last7DaysData} />
         </motion.div>
 
-        {/* Health Score */}
+        {/* ===== TIER 5: Spending Analysis ===== */}
+        <motion.div variants={itemVariants} className="space-y-3">
+          <h3 className="text-sm font-semibold text-slate-300">🔬 Spending Analysis</h3>
+          <SpendingDNA dna={spendingDNA} currencySymbol={currencySymbol} />
+          <NeedLevelSummary needLevels={needLevels} currencySymbol={currencySymbol} />
+        </motion.div>
+
+        {/* ===== TIER 6: Cycle & Item Analysis ===== */}
+        <motion.div variants={itemVariants} className="space-y-3">
+          <h3 className="text-sm font-semibold text-slate-300">📈 Spending Cycles</h3>
+          <CycleSummary cycleSummary={cycleSummary} currencySymbol={currencySymbol} />
+          <OneOffExpenseTracker cycleSummary={cycleSummary} currencySymbol={currencySymbol} />
+        </motion.div>
+
+        {/* ===== TIER 7: Item Intelligence ===== */}
+        <motion.div variants={itemVariants} className="space-y-3">
+          <h3 className="text-sm font-semibold text-slate-300">📦 Spending Breakdown</h3>
+          <ItemSummary items={itemSummary} currencySymbol={currencySymbol} />
+          <ItemIntelligence itemSummary={itemSummary} currencySymbol={currencySymbol} />
+        </motion.div>
+
+        {/* ===== TIER 8: Risk Analysis ===== */}
+        <motion.div variants={itemVariants} className="space-y-3">
+          <h3 className="text-sm font-semibold text-slate-300">⚠️ Risk Analysis</h3>
+          <DangerDayDetector dangerDay={dangerDay} currencySymbol={currencySymbol} />
+          <UnexpectedExpenseShield unexpectedExpenses={unexpectedExpenses} currencySymbol={currencySymbol} />
+          <SubscriptionRadar subscriptions={subscriptions} currencySymbol={currencySymbol} />
+        </motion.div>
+
+        {/* ===== TIER 9: Recommendations ===== */}
+        <motion.div variants={itemVariants} className="space-y-3">
+          <h3 className="text-sm font-semibold text-slate-300">💡 Recommendations</h3>
+          <SavingsSuggester suggestions={suggestions} currencySymbol={currencySymbol} />
+          <SmartBudgetRecommender recommendation={budgetRecommendation} currencySymbol={currencySymbol} />
+        </motion.div>
+
+        {/* ===== TIER 10: Month Report Card ===== */}
+        <EndOfMonthReportCard reportCard={reportCard} currencySymbol={currencySymbol} />
+
+        {/* ===== TIER 11: Health & Tips ===== */}
         <HealthScoreCard score={healthScore} label="Financial Health" />
 
-        {/* Motivational Tip */}
         <motion.div
           variants={itemVariants}
           className="bg-slate-800 rounded-lg p-4 border-l-4 border-primary-500"
@@ -135,7 +179,7 @@ const Home = ({ onAddTransaction }) => {
           <p className="text-white font-medium">{tip}</p>
         </motion.div>
 
-        {/* Recent Transactions */}
+        {/* ===== TIER 12: Recent Transactions ===== */}
         <motion.div variants={itemVariants}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white">Recent Transactions</h3>
@@ -167,7 +211,7 @@ const Home = ({ onAddTransaction }) => {
           )}
         </motion.div>
 
-        {/* Action Buttons */}
+        {/* ===== ACTION BUTTONS ===== */}
         <motion.div
           variants={itemVariants}
           className="grid grid-cols-2 gap-4 pt-4"
