@@ -45,7 +45,7 @@ export const useDashboardLogic = () => {
   const currencySymbol = { EUR: '€', USD: '$', GBP: '£', MAD: 'د.م.' }[currency] || '€';
 
   // Get current month date range
-  const now = new Date();
+  const now = useMemo(() => new Date(), []);
   const currentMonthStart = useMemo(() => new Date(now.getFullYear(), now.getMonth(), 1), [now]);
   const currentMonthEnd = useMemo(() => new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59), [now]);
   const remainingDays = currentMonthEnd.getDate() - now.getDate();
@@ -84,31 +84,31 @@ export const useDashboardLogic = () => {
   // Phase 2: Calculate all analytics metrics
   const spendingDNA = useMemo(() => {
     return calculateSpendingDNA(transactions, currentMonthStart, currentMonthEnd);
-  }, [transactions]);
+  }, [transactions, currentMonthStart, currentMonthEnd]);
 
   const needLevels = useMemo(() => {
     return calculateNeedLevelSummary(transactions, currentMonthStart, currentMonthEnd);
-  }, [transactions]);
+  }, [transactions, currentMonthStart, currentMonthEnd]);
 
   const cycleSummary = useMemo(() => {
     return calculateCycleSummary(transactions, currentMonthStart, currentMonthEnd);
-  }, [transactions]);
+  }, [transactions, currentMonthStart, currentMonthEnd]);
 
   const itemSummary = useMemo(() => {
     return calculateItemSummary(transactions, currentMonthStart, currentMonthEnd);
-  }, [transactions]);
+  }, [transactions, currentMonthStart, currentMonthEnd]);
 
   const dangerDay = useMemo(() => {
     return calculateDangerDay(transactions, currentMonthStart, currentMonthEnd);
-  }, [transactions]);
+  }, [transactions, currentMonthStart, currentMonthEnd]);
 
   const subscriptions = useMemo(() => {
     return calculateSubscriptions(transactions, currentMonthStart, currentMonthEnd);
-  }, [transactions]);
+  }, [transactions, currentMonthStart, currentMonthEnd]);
 
   const unexpectedExpenses = useMemo(() => {
     return calculateUnexpectedExpenses(transactions, currentMonthStart, currentMonthEnd);
-  }, [transactions]);
+  }, [transactions, currentMonthStart, currentMonthEnd]);
 
   const suggestions = useMemo(() => {
     return calculateSavingsSuggestions(transactions, budget, currentMonthStart, currentMonthEnd);
