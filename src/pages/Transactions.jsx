@@ -11,10 +11,12 @@ import Input from '../components/common/Input.jsx';
 import Button from '../components/common/Button.jsx';
 
 const Transactions = ({ onAddTransaction }) => {
-  const { transactions, deleteTransaction } = useBudget();
+  const { transactions, deleteTransaction, settings } = useBudget();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'income', 'expense'
   const [sortOrder, setSortOrder] = useState('desc'); // 'desc' (newest first), 'asc' (oldest first)
+
+  const currencySymbol = { EUR: '€', USD: '$', GBP: '£', MAD: 'د.م.' }[settings?.currency] || '€';
 
   // Apply all filters and sorting
   const filteredTransactions = useMemo(() => {
@@ -137,6 +139,7 @@ const Transactions = ({ onAddTransaction }) => {
               >
                 <TransactionCard 
                   transaction={transaction}
+                  currency={currencySymbol}
                   onDelete={() => deleteTransaction(transaction.id)}
                 />
               </motion.div>
