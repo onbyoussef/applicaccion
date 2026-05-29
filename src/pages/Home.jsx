@@ -30,6 +30,7 @@ import SavingsSuggester from '../components/analytics/SavingsSuggester.jsx';
 import DailyLogStreak from '../components/analytics/DailyLogStreak.jsx';
 
 const Home = ({ onAddTransaction }) => {
+  // Phase 2 deployment - all 15 analytics features active
   const { deleteTransaction } = useBudget();
   const {
     currencySymbol,
