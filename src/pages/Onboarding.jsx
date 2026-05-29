@@ -23,18 +23,6 @@ const Onboarding = ({ onComplete }) => {
       const budgetAmount = parseFloat(budget) || 2000;
       setBudgetContext({
         total: budgetAmount,
-        byCategory: {
-          food: budgetAmount * 0.175,
-          transport: budgetAmount * 0.1,
-          shopping: budgetAmount * 0.075,
-          housing: budgetAmount * 0.5,
-          health: budgetAmount * 0.075,
-          entertainment: budgetAmount * 0.05,
-          travel: budgetAmount * 0.025,
-          education: budgetAmount * 0.025,
-          business: 0,
-          other: 0,
-        },
       });
       setThemeContext(theme);
       completeOnboarding();

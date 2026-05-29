@@ -63,7 +63,8 @@ export const useBudgetLogic = () => {
 
   const categoryTotals = useMemo(() => {
     const totals = {};
-    Object.keys(budget.byCategory).forEach(category => {
+    const byCategory = budget.byCategory || {};
+    Object.keys(byCategory).forEach(category => {
       totals[category] = getTotalByCategory(transactions, category);
     });
     return totals;
